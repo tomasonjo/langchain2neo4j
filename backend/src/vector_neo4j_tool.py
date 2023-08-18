@@ -11,10 +11,7 @@ from logger import logger
 
 vector_search = """
 WITH $embedding AS e
-MATCH (m:Movie)
-WHERE m.embedding IS NOT NULL AND size(m.embedding) = 1536
-WITH m, gds.similarity.cosine(m.embedding, e) AS similarity
-ORDER BY similarity DESC LIMIT 5
+CALL db.index.vector.queryNodes('movies',5, e) yield node as m, score
 CALL {
   WITH m
   MATCH (m)-[r:!RATED]->(target)
