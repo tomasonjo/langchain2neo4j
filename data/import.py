@@ -33,11 +33,11 @@ with driver.session() as session:
 
     for i in range(0, len(embedding_df), step):
         print(f"Importing {i} batch of embeddings")
-        batch = [{'id': str(x[0]), 'embedding': x[2]}
+        batch = [{'id': str(x[0]), 'title': x[1], 'embedding': x[2]}
                  for x in params[i:i+step]]
         session.run("""
         UNWIND $data AS row
-        MATCH (m:Movie {movieId:row.id})
-        SET m.embedding = apoc.convert.fromJsonList(row.embedding);
+        MERGE (m:Movie {movieId:row.id})
+        SET m.title = row.title, m.embedding = apoc.convert.fromJsonList(row.embedding);
         """, {'data': batch})
 print("Import completed")
